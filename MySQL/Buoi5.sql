@@ -221,3 +221,159 @@ VALUES						(1,1),
 							(8,8),
 							(9,9),
 							(10,10);
+
+-- Question 1: Tạo view có chứa danh sách nhân viên thuộc phòng ban sale
+-- VIEW
+drop view if exists bai_1;
+create view bai_1 as
+select de.*,email,username,full_name,create_date
+from department de
+inner join `account` acc
+on de.department_id = acc.department_id
+where department_name = 'Sale';
+select *
+from bai_1;
+
+-- subquery
+select *
+from `account`
+where department_id =(
+select department_id
+from department
+where department_name = 'Sale'); 
+
+-- cte
+with cte_1 as(
+select de.*,email,username,full_name,create_date
+from `account` acc
+inner join department de
+on acc.department_id = de.department_id)
+select *
+from cte_1
+where department_name = 'Sale';
+-- Question 2: Tạo view có chứa thông tin các account tham gia vào nhiều group nhất
+-- VIEW và subquery
+drop view if exists bai_2;
+create view bai_2 as
+select acc.*,count(gr.account_id) as so_luong
+from group_account gr
+inner join `account` acc
+on gr.account_id = acc.account_id
+group by acc.account_id
+having so_luong = ( select count(gr.account_id) as so_luong
+					from group_account gr
+					inner join `account` acc
+					on gr.account_id = acc.account_id
+					group by acc.account_id
+                    order by so_luong desc
+                    limit 1);
+select *
+from bai_2;
+
+-- cte
+with cte_2 as(
+select acc.*
+from group_account gr
+inner join `account` acc
+on gr.account_id = acc.account_id)
+select account_id,username,full_name,count(account_id) as so_luong
+from cte_2
+group by account_id 
+having so_luong = ( select count(account_id) as so_luong
+					from cte_2
+					group by account_id
+                    order by so_luong desc
+                    limit 1);
+
+
+-- Question 3: Tạo view có chứa câu hỏi có những content quá dài (content quá 300 từ
+-- được coi là quá dài) và xóa nó đi
+-- VIEW 
+drop view if exists bai_3;
+create view bai_3 as
+select *
+from question 
+where char_length(content)>300;
+delete from question
+where char_length(content)>300;
+select *
+from bai_3;
+
+
+-- subquery
+select *
+from question
+where question_id = (
+select question_id
+from question
+where char_length(content)>300);
+-- cte
+with cte_3 as(
+select *,char_length(content) as do_dai
+from question)
+select *
+from cte_3
+where do_dai >300;
+
+-- Question 4: Tạo view có chứa danh sách các phòng ban có nhiều nhân viên nhất
+-- VIEW và subquery
+drop view if exists bai_4;
+create view bai_4 as
+select de.*,count(acc.department_id) as so_luong
+from `account` acc
+inner join department de
+on acc.department_id = de.department_id
+group by de.department_id
+having so_luong =(
+					select count(acc.department_id) as so_luong
+					from `account` acc
+					inner join department de
+					on acc.department_id = de.department_id
+					group by de.department_id
+					order by so_luong desc
+					limit 1);
+select *
+from bai_4;
+
+
+-- cte 
+with cte_4 as(
+select de.*
+from `account` acc
+inner join department de
+on acc.department_id = de.department_id
+)
+select department_id,count(department_id) as so_luong
+from cte_4
+group by department_id
+having so_luong =(
+					select count(department_id) as so_luong
+                    from cte_4
+					group by department_id
+					order by so_luong desc
+					limit 1);
+-- Question 5: Tạo view có chứa tất các các câu hỏi do user họ Nguyễn tạo.
+-- VIEW
+drop view if exists bai_5;
+create view bai_5 as
+select que.*,username,full_name
+from `account` acc
+inner join question que
+on acc.account_id = que.creator_id
+where full_name like 'nguyen%';
+select *
+from bai_5;
+
+-- subquery và cte
+with cte_5 as(
+select acc.*
+from `account` acc
+inner join question que
+on acc.account_id = que.creator_id)
+select account_id,username,full_name
+from cte_5
+where account_id in (
+select account_id
+from cte_5
+where full_name like 'nguyen%');
+

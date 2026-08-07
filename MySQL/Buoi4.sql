@@ -238,6 +238,8 @@ select *
 from `account` acc
 inner join `position` po
 on acc.position_id = po.position_id
+left join department de 
+on acc.department_id = de.department_id
 where position_name = 'Dev';
 
 
@@ -251,14 +253,18 @@ having so_luong>3;
 
 
 -- Question 5: Viết lệnh để lấy ra danh sách câu hỏi được sử dụng trong đề thi nhiều nhất
-select que.*,count(ex.exam_id) as so_luong
-from exam_question ex
-right join question que
-on ex.question_id = que.question_id
-group by question_id, content
-order by so_luong desc
-limit 1;
-
+SELECT que.*, COUNT(ex.exam_id) AS so_luong
+FROM question que
+LEFT JOIN exam_question ex
+ON ex.question_id = que.question_id
+GROUP BY que.question_id
+HAVING COUNT(ex.exam_id) = (
+    SELECT COUNT(exam_id)
+    FROM exam_question
+    GROUP BY question_id
+    ORDER BY COUNT(exam_id) DESC
+    LIMIT 1
+);
 
 -- Question 6: Thông kê mỗi category Question được sử dụng trong bao nhiêu Question
 select ca.*, count(que.question_id) as so_luong
@@ -287,7 +293,7 @@ limit 1;
 
 
 -- Question 9: Thống kê số lượng account trong mỗi group
-select gro.*, count(gr.account_id) as so_luong
+select gro.*, count(gr.group_id) as so_luong
 from group_account gr
 right join `group` gro
 on gro.group_id = gr.group_id
@@ -296,14 +302,18 @@ group by group_id;
 
 -- Question 10: Tìm chức vụ có ít người nhất
 select po.*,count(acc.position_id) as so_luong
-from `account` acc
-left join department de
-on acc.department_id = de.department_id
-left join `position` po
+from `position` po 
+left join `account` acc
 on acc.position_id = po.position_id
-group by position_id
+group by po.position_id
+having so_luong =
+(select count(acc.position_id) as so_luong
+from `position` po 
+left join `account` acc
+on acc.position_id = po.position_id
+group by po.position_id
 order by so_luong 
-limit 1;
+limit 1);
 
 
 -- Question 11: Thống kê mỗi phòng ban có bao nhiêu dev, test, scrum master, PM

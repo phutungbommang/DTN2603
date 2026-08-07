@@ -248,21 +248,26 @@ select *,char_length(replace(full_name,' ','')) as ten
 from `account`
 order by ten desc
 limit 1;
+--
+SELECT MAX(CHAR_LENGTH(full_name))
+FROM `account`;
 -- Question 5: Lấy ra thông tin account có full name dài nhất và thuộc phòng ban có id= 3
-select *,char_length(full_name) as ten
-from `account`
-where department_id =3
-order by ten desc
-limit 1;
+SELECT MAX(CHAR_LENGTH(full_name))
+FROM `account`
+where department_id =3;
+-- th2
+
+
 -- Question 6: Lấy ra tên group đã tham gia trước ngày 05/08/2026
 select *
 from `group`
 where create_date <'2026-08-05';
+
 -- Question 7: Lấy ra ID của question có >= 4 câu trả lời
-SELECT question_id
+SELECT question_id,count(1) as so_luong
 FROM answer
 GROUP BY question_id
-HAVING COUNT(answer_id) >= 4;
+HAVING COUNT(1) >= 4;
 -- Question 8: Lấy ra các mã đề thi có thời gian thi >= 60 phút và được tạo trước ngày 05/08/2026
 SELECT code
 FROM exam
@@ -281,3 +286,13 @@ WHERE department_id = 2;
 SELECT *
 FROM account
 WHERE full_name LIKE 'D%o';
+-- Question 12: Xóa tất cả các exam được tạo trước ngày 20/12/2019
+delete 
+from exam
+where create_date < '2026-12-20';
+-- Question 13: Xóa tất cả các question có nội dung bắt đầu bằng từ "câu hỏi"
+delete
+from question
+where content like "Cau hoi";
+
+
