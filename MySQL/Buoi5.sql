@@ -314,7 +314,7 @@ from question)
 select *
 from cte_3
 where do_dai >300;
-
+update account set username = '2' where account_id = 1;
 -- Question 4: Tạo view có chứa danh sách các phòng ban có nhiều nhân viên nhất
 -- VIEW và subquery
 drop view if exists bai_4;
