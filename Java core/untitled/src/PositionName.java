@@ -1,6 +1,6 @@
-public enum PostionName {
-    DEV,
-    TEST,
-    SCRUMMASTER,
-    PM
+public enum PositionName {
+    dev,
+    test,
+    scrumMaster,
+    pm
 }
