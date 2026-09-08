@@ -17,5 +17,10 @@ public class Exercise3 {
         int soInt = soInteger;
         System.out.println("convert số trên thành datatype int :" + soInt);
         System.out.println("\n");
+    }public static void Question4(){
+        Integer soInteger =  new Integer(1234567);
+        int soInt = soInteger;
+        System.out.println("convert số trên thành datatype int :" + soInt);
+        System.out.println("\n");
     }
 }
