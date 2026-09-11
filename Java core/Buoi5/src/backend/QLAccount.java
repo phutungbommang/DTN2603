@@ -86,8 +86,115 @@ public class QLAccount implements IQLAccount{
             }
             System.out.println("+----+------------------------------+------------------+--------------------+----------------------+------------------+");
         }
-        public static void main(String[] args) throws SQLException {
+
+    @Override
+    public void themAccount() {
+        System.out.print("Nhập Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Nhập Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Nhập Full Name: ");
+        String fullName = scanner.nextLine();
+        System.out.print("Nhập Department ID: ");
+        Integer departmentId = scanner.nextInt();
+        System.out.print("Nhập Position ID: ");
+        Integer positionId = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Nhập Create Date: ");
+        String createDate = scanner.nextLine();
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String userDB = "root";
+        String passwordDB = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, userDB, passwordDB);
+            String sql = "INSERT INTO `account`(email, username, full_name, department_id, position_id, create_date) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, username);
+            preparedStatement.setString(3, fullName);
+            preparedStatement.setInt(4, departmentId);
+            preparedStatement.setInt(5, positionId);
+            preparedStatement.setString(6, createDate);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Thêm Account thành công!");
+            } else {
+                System.out.println("Thêm Account thất bại!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void xoaAccountTheoId() {
+        System.out.print("Nhập ID Account cần xóa: ");
+        Integer accountId = scanner.nextInt();
+        scanner.nextLine();
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "DELETE FROM `account` WHERE account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, accountId);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Xóa Account thành công!");
+            } else {
+                System.out.println("Không tìm thấy Account!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void suaUsernameTheoId() {
+        System.out.print("Nhập ID Account cần sửa: ");
+        Integer accountId = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Nhập Username mới: ");
+        String usernameMoi = scanner.nextLine();
+
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+
+        try {
+            Connection connection =
+                    DriverManager.getConnection(url, username, password);
+
+            String sql =
+                    "UPDATE `account` SET username = ? WHERE account_id = ?";
+
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, usernameMoi);
+            preparedStatement.setInt(2, accountId);
+
+            int c = preparedStatement.executeUpdate();
+
+            if (c > 0) {
+                System.out.println("Cập nhật thành công!");
+            } else {
+                System.out.println("Không tìm thấy Account!");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
             QLAccount qlAccount = new QLAccount();
             qlAccount.hienThiAccount();
+            qlAccount.themAccount();
+            qlAccount.xoaAccountTheoId();
+            qlAccount.suaUsernameTheoId();
         }
 }

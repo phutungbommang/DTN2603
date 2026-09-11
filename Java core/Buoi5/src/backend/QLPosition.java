@@ -60,8 +60,126 @@ public class QLPosition implements IQLPosition {
         }
         System.out.println("+-------------------------+-------------------------+");
     }
+
+    @Override
+    public void themPosition() {
+        System.out.println("1. DEV");
+        System.out.println("2. TEST");
+        System.out.println("3. SCRUM_MASTER");
+        System.out.println("4. PM");
+        System.out.print("Chọn chức vụ: ");
+        String choice = scanner.nextLine();
+        PositionName positionName = null;
+        switch (choice) {
+            case "1":
+                positionName = PositionName.DEV;
+                break;
+            case "2":
+                positionName = PositionName.TEST;
+                break;
+            case "3":
+                positionName = PositionName.SCRUM_MASTER;
+                break;
+            case "4":
+                positionName = PositionName.PM;
+                break;
+        }
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "INSERT INTO `position`(position_name) VALUES(?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, positionName.name());
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Thêm chức vụ thành công!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void xoaPositionTheoId() {
+        System.out.print("Nhập ID Position cần xóa: ");
+        Integer positionId = scanner.nextInt();
+        scanner.nextLine();
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "DELETE FROM `position` WHERE position_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, positionId);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Xóa Position thành công!");
+            } else {
+                System.out.println("Không tìm thấy Position!");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void suaPositionNameTheoId() {
+        System.out.print("Nhập ID Position cần sửa: ");
+        Integer positionId = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("1. DEV");
+        System.out.println("2. TEST");
+        System.out.println("3. SCRUM_MASTER");
+        System.out.println("4. PM");
+        System.out.print("Mời chọn Position mới: ");
+        String choice = scanner.nextLine();
+        PositionName positionName = null;
+        switch (choice) {
+            case "1":
+                positionName = PositionName.DEV;
+                break;
+            case "2":
+                positionName = PositionName.TEST;
+                break;
+            case "3":
+                positionName = PositionName.SCRUM_MASTER;
+                break;
+            case "4":
+                positionName = PositionName.PM;
+                break;
+            default:
+                System.out.println("Lựa chọn không hợp lệ!");
+                return;
+        }
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "UPDATE `position` SET position_name = ? WHERE position_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, positionName.name());
+            preparedStatement.setInt(2, positionId);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Cập nhật Position thành công!");
+            } else {
+                System.out.println("Không tìm thấy Position!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws SQLException {
         QLPosition position = new QLPosition();
         position.hienThiPosition();
+        position.themPosition();
+        position.xoaPositionTheoId();
+        position.suaPositionNameTheoId();
     }
 }

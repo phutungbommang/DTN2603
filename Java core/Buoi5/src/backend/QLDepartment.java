@@ -59,9 +59,81 @@ public class QLDepartment implements IQLDepartment{
         }
         System.out.println("+-------------------------+-------------------------+");
     }
+
+    @Override
+    public void themDepartment() {
+        System.out.print("Nhập tên phòng ban: ");
+        String departmentName = scanner.nextLine();
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "INSERT INTO department(department_name) VALUES(?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, departmentName);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Thêm phòng ban thành công!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void xoaDepartmentTheoId() {
+        System.out.print("Nhập ID phòng ban cần xóa: ");
+        Integer departmentId = scanner.nextInt();
+        scanner.nextLine();
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "DELETE FROM department WHERE department_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, departmentId);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Xóa thành công!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void suaDepartmentNameTheoId() {
+        System.out.print("Nhập ID phòng ban cần sửa: ");
+        Integer departmentId = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Nhập tên phòng ban mới: ");
+        String departmentName = scanner.nextLine();
+        String url = "jdbc:mysql://localhost:3306/buoi5";
+        String username = "root";
+        String password = "root";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String sql = "UPDATE department SET department_name = ? WHERE department_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, departmentName);
+            preparedStatement.setInt(2, departmentId);
+            int c = preparedStatement.executeUpdate();
+            if (c > 0) {
+                System.out.println("Cập nhật thành công!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws SQLException {
         QLDepartment department = new QLDepartment();
         department.hienThiDepartment();
+        department.themDepartment();
+        department.xoaDepartmentTheoId();
+        department.suaDepartmentNameTheoId();
     }
 
 }
