@@ -92,4 +92,25 @@ public class QLDepartmentResponsitory implements IQLDepartmentResponsitory {
         }
         return false;
     }
+
+    @Override
+    public boolean isDepartmentExist(int id) {
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "SELECT COUNT(*) FROM department WHERE department_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                JDBCUtils.closeConnection(connection);
+                return count > 0;
+            }
+            JDBCUtils.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

@@ -29,5 +29,17 @@ public class QLAccountController {
     public boolean themAccount(String email,String username,String fullName,Integer departmentId,Integer positionId,String createDate) {
         return service.themAccount(email,username,fullName,departmentId,positionId,createDate);
     }
+    boolean isValidEmail(String email){
+        return service.isValidEmail(email);
+    }
+    boolean isUsernameExist(String username){
+        return service.isUsernameExist(username);
+    }
+    boolean isEmailExist(String email){
+        return service.isEmailExist(email);
+    }
+    boolean isAccountExist(int id){
+        return service.isAccountExist(id);
+    }
 
 }

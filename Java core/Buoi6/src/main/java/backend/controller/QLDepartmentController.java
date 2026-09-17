@@ -32,4 +32,7 @@ public class QLDepartmentController {
     public boolean themDepartment(String departmentName) {
         return service.themDepartment(departmentName);
     }
+     public boolean isDepartmentExist(int id){
+        return service.isDepartmentExist(id);
+     }
 }

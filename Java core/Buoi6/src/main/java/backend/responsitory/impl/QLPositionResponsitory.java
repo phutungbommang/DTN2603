@@ -94,4 +94,24 @@ public class QLPositionResponsitory implements IQLPositionResponsitory {
         }
         return false;
     }
+
+    @Override
+    public boolean isPositionExist(int id) {
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "SELECT COUNT(*) FROM `position` WHERE position_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                JDBCUtils.closeConnection(connection);
+                return count > 0;
+            }
+            JDBCUtils.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

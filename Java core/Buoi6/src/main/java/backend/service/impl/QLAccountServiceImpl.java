@@ -32,4 +32,26 @@ public class QLAccountServiceImpl implements IQLAccountService {
     public boolean themAccount(String email, String username, String fullName, Integer departmentId, Integer positionId, String createDate) {
         return repository.themAccount(email,username,fullName,departmentId,positionId,createDate);
     }
+
+    @Override
+    public boolean isValidEmail(String email) {
+        return repository.isValidEmail(email);
+    }
+
+    @Override
+    public boolean isUsernameExist(String username) {
+        return repository.isUsernameExist(username);
+    }
+
+    @Override
+    public boolean isEmailExist(String email) {
+        return repository.isEmailExist(email);
+    }
+
+    @Override
+    public boolean isAccountExist(int id) {
+        return repository.isAccountExist(id);
+    }
+
+
 }

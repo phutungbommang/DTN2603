@@ -10,4 +10,5 @@ public interface IQLPositionService {
     boolean suaPositionNameTheoId(Integer positionId, PositionName positionName);
     boolean xoaPositionTheoId(Integer positionId);
     boolean themPosition(PositionName positionName);
+    boolean isPositionExist(int id);
 }

@@ -34,6 +34,12 @@ public class QLPositionServiceImpl implements IQLPositionService {
 
     @Override
     public boolean themPosition(PositionName positionName) {
+
         return repository.themPosition(positionName);
+    }
+
+    @Override
+    public boolean isPositionExist(int id) {
+        return repository.isPositionExist(id);
     }
 }

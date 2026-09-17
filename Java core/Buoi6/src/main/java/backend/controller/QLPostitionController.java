@@ -31,6 +31,10 @@ public class QLPostitionController {
     }
 
     public boolean themPosition(PositionName positionName) {
+
         return service.themPosition(positionName);
+    }
+    public boolean isPositionExist(int id){
+        return service.isPositionExist(id);
     }
 }

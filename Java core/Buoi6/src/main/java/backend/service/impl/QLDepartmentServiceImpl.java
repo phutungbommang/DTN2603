@@ -27,11 +27,19 @@ public class QLDepartmentServiceImpl implements IQLDepartmentService {
 
     @Override
     public boolean xoaDepartmentTheoId(Integer departmentId) {
+
         return repository.xoaDepartmentTheoId(departmentId);
     }
 
     @Override
     public boolean themDepartment(String departmentName) {
+
         return repository.themDepartment(departmentName);
     }
+
+    @Override
+    public boolean isDepartmentExist(int id) {
+        return repository.isDepartmentExist(id);
+    }
+
 }

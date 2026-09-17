@@ -121,4 +121,70 @@ public class QLAccountResponsitory implements IQLAccountResponsitory {
         }
         return false;
     }
+
+    @Override
+    public boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) return false;
+        return email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+    }
+
+    @Override
+    public boolean isUsernameExist(String username) {
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "SELECT COUNT(*) FROM `account` WHERE username = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                JDBCUtils.closeConnection(connection);
+                return count > 0; // true -> đã tồn tại
+            }
+            JDBCUtils.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isEmailExist(String email) {
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "SELECT COUNT(*) FROM `account` WHERE email = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                JDBCUtils.closeConnection(connection);
+                return count > 0; // true -> đã tồn tại
+            }
+            JDBCUtils.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isAccountExist(int id) {
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "SELECT COUNT(*) FROM `account` WHERE account_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                JDBCUtils.closeConnection(connection);
+                return count > 0; // true -> tồn tại
+            }
+            JDBCUtils.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
