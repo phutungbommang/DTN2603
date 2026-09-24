@@ -1,0 +1,4 @@
+email,username,fullName,departmentId,positionId,error_message
+email1@gmail.com,username1,fullName1,1,1,Position không tồn tại
+,,,,,Sai số lượng cột
+,Sai số lượng cột

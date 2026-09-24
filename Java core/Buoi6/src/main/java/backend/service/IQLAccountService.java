@@ -14,7 +14,5 @@ public interface IQLAccountService {
     boolean isUsernameExist(String username);
     boolean isEmailExist(String email);
     boolean isAccountExist(int id);
-
-
-
+    String importCSV(String url);
 }

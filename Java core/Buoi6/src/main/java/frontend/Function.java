@@ -7,6 +7,7 @@ import entity.Account;
 import entity.Department;
 import entity.Position;
 import entity.PositionName;
+import utils.ScannerUtils;
 
 import java.util.List;
 import java.util.Scanner;
@@ -68,147 +69,103 @@ public class Function {
         return false;
     }
     public void hienThiAccount() {
-        System.out.println("==== Hiển thị toàn bộ account ====");
+        System.out.println("Hiển thị toàn bộ account");
         List<Account> accounts = accountController.getAccounts();
         this.showAccount(accounts);
     }
     public void themAccount() {
-        String username = "";
+        String username;
         while (true) {
-            System.out.println("Nhập Username (>6 và <100 kí tự, không trùng): ");
-            username = this.checkLength(6, 100);
+            System.out.println("Nhập Username >6 và <100 kí tự: ");
+            username = ScannerUtils.inputString(6, 100);
             if (isUsernameExist(username)) {
-                System.err.println("Username đã tồn tại. Nhập lại!");
+                System.err.println("Username đã tồn tại");
                 continue;
             }
             break;
         }
-        String email = "";
+        String email;
         while (true) {
-            System.out.println("Nhập Email (>6 và <100 kí tự, đúng định dạng, không trùng): ");
-            email = this.checkLength(6, 100);
-            if (!isValidEmail(email)) {
-                System.err.println("Email không đúng định dạng (VD: abc@gmail.com). Nhập lại!");
-                continue;
-            }
+            System.out.println("Nhập Email: ");
+            email = ScannerUtils.inputEmail();
+
             if (isEmailExist(email)) {
-                System.err.println("Email đã tồn tại. Nhập lại!");
+                System.err.println("Email đã tồn tại");
                 continue;
             }
             break;
         }
-        System.out.println("Nhập FullName (>6 và <100 kí tự): ");
-        String fullName = this.checkLength(6, 100);
-        int departmentId = 0;
+        System.out.println("Nhập FullName: ");
+        String fullName = ScannerUtils.inputString(6, 100);
+        int departmentId;
         while (true) {
             System.out.println("Nhập Department Id: ");
-            if (!scanner.hasNextInt()) {
-                System.err.println("Vui lòng nhập số!");
-                scanner.nextLine();
-                continue;
-            }
-            departmentId = scanner.nextInt();
-            scanner.nextLine();
+            departmentId = ScannerUtils.inputInt(1, Integer.MAX_VALUE);
             if (!isDepartmentExist(departmentId)) {
-                System.err.println("Department Id không tồn tại. Nhập lại!");
+                System.err.println("Department không tồn tại");
                 continue;
             }
             break;
         }
-        int positionId = 0;
+        int positionId;
         while (true) {
             System.out.println("Nhập Position Id: ");
-            if (!scanner.hasNextInt()) {
-                System.err.println("Vui lòng nhập số!");
-                scanner.nextLine();
-                continue;
-            }
-            positionId = scanner.nextInt();
-            scanner.nextLine();
+            positionId = ScannerUtils.inputInt(1, Integer.MAX_VALUE);
             if (!isPositionExist(positionId)) {
-                System.err.println("Position Id không tồn tại. Nhập lại!");
+                System.err.println("Position không tồn tại");
                 continue;
             }
             break;
         }
-        String createDate = "";
-        while (true) {
-            System.out.println("Nhập Create Date (yyyy-MM-dd): ");
-            createDate = scanner.nextLine();
-            if (!createDate.trim().matches("^(?:(?:19|20)\\d\\d-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|02-(?:0[1-9]|1\\d|2[0-8]))|(?:(?:19|20)(?:[02468][048]|[13579][26])|(?:20)00)-02-29)$")) {
-                System.err.println("Ngày không hợp lệ. Nhập lại (yyyy-MM-dd)!");
-                continue;
-            }
-            break;
-        }
-
-        boolean check = accountController.themAccount(email, username, fullName, departmentId, positionId, createDate);
-        if (check) {
-            System.out.println("Thêm account thành công!");
-        } else {
-            System.out.println("Thêm account không thành công!");
-        }
+        System.out.println("Nhập Create Date (yyyy-MM-dd): ");
+        String createDate = ScannerUtils.inputDate();
+        boolean check = accountController.themAccount(
+                email,
+                username,
+                fullName,
+                departmentId,
+                positionId,
+                createDate
+        );
+        System.out.println(check ? "Thêm account thành công" : "Thêm account không thành công");
     }
     public void xoaAccount() {
-        System.out.println("==== Chức năng xóa account ====");
-        int accountId = 0;
+        int accountId;
         while (true) {
             System.out.println("Nhập ID Account muốn xóa: ");
-            if (!scanner.hasNextInt()) {
-                System.err.println("Vui lòng nhập số!");
-                scanner.nextLine();
-                continue;
-            }
-            accountId = scanner.nextInt();
-            scanner.nextLine();
+            accountId = ScannerUtils.inputInt(1, Integer.MAX_VALUE);
             if (!isAccountExist(accountId)) {
-                System.err.println("Account Id không tồn tại. Nhập lại!");
+                System.err.println("Account không tồn tại");
                 continue;
             }
             break;
         }
         boolean check = accountController.xoaAccountTheoId(accountId);
-        if (check) {
-            System.out.println("Xóa account thành công!");
-        } else {
-            System.out.println("Xóa account không thành công!");
-        }
+        System.out.println(check ? "Xóa account thành công" : "Xóa account không thành công");
     }
     public void suaAccount() {
-        // --- Id ---
-        int accountId = 0;
+        int accountId;
         while (true) {
             System.out.println("Nhập ID Account muốn sửa: ");
-            if (!scanner.hasNextInt()) {
-                System.err.println("Vui lòng nhập số!");
-                scanner.nextLine();
-                continue;
-            }
-            accountId = scanner.nextInt();
-            scanner.nextLine();
+            accountId = ScannerUtils.inputInt(1, Integer.MAX_VALUE);
             if (!isAccountExist(accountId)) {
-                System.err.println("Account Id không tồn tại. Nhập lại!");
+                System.err.println("Account không tồn tại");
                 continue;
             }
             break;
         }
-        String usernameMoi = "";
+        String usernameMoi;
         while (true) {
-            System.out.println("Nhập Username mới (>6 và <100 kí tự, không trùng): ");
-            usernameMoi = this.checkLength(6, 100);
+            System.out.println("Nhập Username mới: ");
+            usernameMoi = ScannerUtils.inputString(6, 100);
             if (isUsernameExist(usernameMoi)) {
-                System.err.println("Username đã tồn tại. Nhập lại!");
+                System.err.println("Username đã tồn tại");
                 continue;
             }
             break;
         }
-
         boolean check = accountController.suaUserTheoId(usernameMoi, accountId);
-        if (check) {
-            System.out.println("Sửa account thành công!");
-        } else {
-            System.out.println("Sửa account không thành công!");
-        }
+        System.out.println(check ? "Sửa account thành công" : "Sửa account không thành công");
     }
 
     public void hienThiDepartment() {
@@ -219,12 +176,12 @@ public class Function {
 
     public void themDepartment() {
         System.out.println("Nhập tên phòng ban (3-50 kí tự): ");
-        String departmentName = this.checkLength(3, 50);
+        String departmentName = ScannerUtils.inputString(3,50);
         boolean check = departmentController.themDepartment(departmentName);
         if (check) {
-            System.out.println("Thêm phòng ban thành công!");
+            System.out.println("Thêm phòng ban thành công");
         } else {
-            System.out.println("Thêm phòng ban không thành công!");
+            System.out.println("Thêm phòng ban không thành công");
         }
     }
     public void xoaDepartment() {
@@ -233,14 +190,14 @@ public class Function {
         while (true) {
             System.out.println("Nhập ID phòng ban muốn xóa: ");
             if (!scanner.hasNextInt()) {
-                System.err.println("Vui lòng nhập số!");
+                System.err.println("Vui lòng nhập số");
                 scanner.nextLine();
                 continue;
             }
             departmentId = scanner.nextInt();
             scanner.nextLine();
             if (!isDepartmentExist(departmentId)) {
-                System.err.println("Department Id không tồn tại. Nhập lại!");
+                System.err.println("Department Id không tồn tại. Nhập lại ");
                 continue;
             }
             break;
@@ -248,7 +205,7 @@ public class Function {
 
         boolean check = departmentController.xoaDepartmentTheoId(departmentId);
         if (check) {
-            System.out.println("Xóa phòng ban thành công!");
+            System.out.println("Xóa phòng ban thành công");
         } else {
             System.out.println("Xóa phòng ban không thành công!");
         }
@@ -258,7 +215,7 @@ public class Function {
         while (true) {
             System.out.println("Nhập ID phòng ban muốn sửa: ");
             if (!scanner.hasNextInt()) {
-                System.err.println("Vui lòng nhập số!");
+                System.err.println("Vui lòng nhập số");
                 scanner.nextLine();
                 continue;
             }
@@ -418,6 +375,16 @@ public class Function {
         }
         System.out.println("+-------------------------+-------------------------+");
     }
+    private void importCSV() {
+        // đưa file csv vào thông qua 1 đường dẫn: C:\Users\media\OneDrive\Máy tính\DTN2603\Java core\csv\input_acc.csv
+        System.out.println("Nhập vào đường dẫn file csv muốn import: ");
+        String url = scanner.nextLine();
+        // đưa đường dẫn cho controller
+        String message = accountController.importCSV(url);
+        // đọc file -> ds các tài liệu trong file
+        // lưu ds các tài liệu đó vào DB
+        System.out.println(message);
+    }
     public void menu() {
         while (true) {
             System.out.println("ACCOUNT");
@@ -425,16 +392,17 @@ public class Function {
             System.out.println("2. Thêm Account");
             System.out.println("3. Xóa Account");
             System.out.println("4. Sửa Account");
+            System.out.println("5. Import Account từ file csv.");
             System.out.println("\nDEPARTMENT");
-            System.out.println("5. Hiển thị Department");
-            System.out.println("6. Thêm Department");
-            System.out.println("7. Xóa Department");
-            System.out.println("8. Sửa Department");
+            System.out.println("6. Hiển thị Department");
+            System.out.println("7. Thêm Department");
+            System.out.println("8. Xóa Department");
+            System.out.println("9. Sửa Department");
             System.out.println("\nPOSITION");
-            System.out.println("9. Hiển thị Position");
-            System.out.println("10. Thêm Position");
-            System.out.println("11. Xóa Position");
-            System.out.println("12. Sửa Position");
+            System.out.println("10. Hiển thị Position");
+            System.out.println("11. Thêm Position");
+            System.out.println("12. Xóa Position");
+            System.out.println("13. Sửa Position");
             System.out.println("\n0. Thoát");
             System.out.print("Mời chọn chức năng: ");
             String choice = scanner.nextLine();
@@ -452,27 +420,29 @@ public class Function {
                     suaAccount();
                     break;
                 case "5":
+                    importCSV();
+                case "6":
                     hienThiDepartment();
                     break;
-                case "6":
+                case "7":
                     themDepartment();
                     break;
-                case "7":
+                case "8":
                     xoaDepartment();
                     break;
-                case "8":
+                case "9":
                     suaDepartment();
                     break;
-                case "9":
+                case "10":
                     hienThiPosition();
                     break;
-                case "10":
+                case "11":
                     themPosition();
                     break;
-                case "11":
+                case "12":
                     xoaPosition();
                     break;
-                case "12":
+                case "13":
                     suaPosition();
                     break;
                 case "0":
