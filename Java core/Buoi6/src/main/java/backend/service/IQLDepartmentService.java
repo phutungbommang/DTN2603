@@ -10,4 +10,5 @@ public interface IQLDepartmentService {
     boolean xoaDepartmentTheoId(Integer departmentId);
     boolean themDepartment(String departmentName);
     boolean isDepartmentExist(int id);
+    String importDepartmentCSV(String url);
 }

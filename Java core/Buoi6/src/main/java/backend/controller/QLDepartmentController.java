@@ -35,4 +35,7 @@ public class QLDepartmentController {
      public boolean isDepartmentExist(int id){
         return service.isDepartmentExist(id);
      }
+    public String importDepartmentCSV(String url) {
+        return service.importDepartmentCSV(url);
+    }
 }

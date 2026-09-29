@@ -6,16 +6,18 @@ import backend.responsitory.impl.QLAccountResponsitory;
 import backend.service.IQLAccountService;
 import backend.service.IQLDepartmentService;
 import backend.service.IQLPositionService;
+import backend.service.ImportFileCSV;
 import entity.Account;
 import entity.Department;
 import entity.Position;
 import java.time.LocalDate;
+import context.AccountContext;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class QLAccountServiceImpl implements IQLAccountService {
+public class QLAccountServiceImpl implements IQLAccountService, ImportFileCSV<Account, AccountContext> {
     private IQLAccountResponsitory repository;
     private IQLDepartmentService departmentRepository;
     private IQLPositionService positionRepository;
@@ -67,111 +69,127 @@ public class QLAccountServiceImpl implements IQLAccountService {
 
     @Override
     public String importCSV(String url) {
-        if (!url.endsWith(".csv")) {
-            return "File không đúng định dạng";
-        }
-        File file = new File(url);
-        if (!file.exists()) {
-            return "File không tồn tại";
-        }
-        List<Account> accounts = new ArrayList<>();
-        List<String> listErrors = new ArrayList<>();
-        String header = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(url))) {
-            header = br.readLine();
-            String line;
-            while ((line = br.readLine()) != null) {
-                String error = validationAccount(line, accounts);
-                if (error != null) {
-                    System.out.println(error);
-                    listErrors.add(error);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        for (Account account : accounts) {
-            repository.themAccount(
-                    account.getEmail(),
-                    account.getUsername(),
-                    account.getFullName(),
-                    account.getDepartment().getDepartmentId(),
-                    account.getPosition().getPositionId(),
-                    account.getCreateDate()
-            );
-        }
-        if (!listErrors.isEmpty()) {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\media\\OneDrive\\Máy tính\\DTN2603\\Java core\\csv\\account_errors.csv"))) {
-                bw.write(header + ",error_message");
-                bw.newLine();
-                for (String error : listErrors) {
-                    bw.write(error);
-                    bw.newLine();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return listErrors.isEmpty() ? "Import thành công" : "Đã xuất file account_errors.csv";
+        List<Account> accounts = repository.getAccounts();
+        List<Department> departments = departmentRepository.getDepartments();
+        List<Position> positions = positionRepository.getPositions();
+        Set<String> setUsername = accounts.stream().map(Account::getUsername).collect(Collectors.toSet());
+        Set<String> setEmail = accounts.stream().map(Account::getEmail).collect(Collectors.toSet());
+        Map<Integer, Department> mapDepartmentId = departments.stream().collect(Collectors.toMap(
+                                Department::getDepartmentId,
+                                department -> department
+                        ));
+        Map<Integer, Position> mapPositionId = positions.stream().collect(Collectors.toMap(
+                                Position::getPositionId,
+                                position -> position
+                        ));
+        AccountContext context =
+                new AccountContext(
+                        setUsername,
+                        setEmail,
+                        mapDepartmentId,
+                        mapPositionId
+                );
+
+        String pathErrorsFile =
+                "C:\\Users\\media\\OneDrive\\Máy tính\\DTN2603\\Java core\\csv\\account_errors.csv";
+
+        return this.importCSV(url, context, pathErrorsFile);
     }
 
-    public String validationAccount(String line, List<Account> accounts) {
-        List<String> errors = new ArrayList<>();
+
+
+    @Override
+    public void validation(String line, List<Account> entities, List<String> listErrors, AccountContext context) {
         String[] values = line.split(",");
         if (values.length != 5) {
-            return line + ",Sai số lượng cột";
+            listErrors.add(line + ",Sai số lượng cột");
+            return;
         }
+        List<String> errors = new ArrayList<>();
         String email = values[0].trim();
-        if (!email.matches(StringCommon.EMAIL_REGEX)) {
+        if (email.length() < 6 || email.length() > 100) {
+            errors.add("Email có độ dài từ 6 đến 100 kí tự");
+        } else if (!email.matches(StringCommon.EMAIL_REGEX)) {
             errors.add("Email sai định dạng");
-        } else if (isEmailExist(email)) {
+        } else if (context.getSetEmail().contains(email)) {
             errors.add("Email đã tồn tại");
         }
-        String username = values[1].trim();
-        if (username.length() < 6 || username.length() > 100) {
-            errors.add("Username từ 6-100 ký tự");
-        } else if (isUsernameExist(username)) {
+        String userName = values[1].trim();
+        if (userName.length() < 6 || userName.length() > 100) {
+            errors.add("Username có độ dài từ 6 đến 100 kí tự");
+        } else if (context.getSetUsername().contains(userName)) {
             errors.add("Username đã tồn tại");
         }
         String fullName = values[2].trim();
         if (fullName.length() < 6 || fullName.length() > 100) {
-            errors.add("FullName từ 6-100 ký tự");
+            errors.add("FullName có độ dài từ 6 đến 100 kí tự");
         }
         int departmentId = 0;
-        if (!values[3].matches(StringCommon.NUMBER_REGEX)) {
+        Department department = new Department();
+        if (!values[3].trim().matches(StringCommon.NUMBER_REGEX)) {
             errors.add("DepartmentId phải là số");
         } else {
-            departmentId = Integer.parseInt(values[3]);
-            if (!departmentRepository.isDepartmentExist(departmentId)) {
-                errors.add("Department không tồn tại");
+            departmentId = Integer.parseInt(values[3].trim());
+            if (departmentId <= 0) {
+                errors.add("DepartmentId phải lớn hơn 0");
+            } else if (!context.getMapByDepartmentId().containsKey(departmentId)) {
+                errors.add("DepartmentId không tồn tại");
+            } else {
+                department = context.getMapByDepartmentId().get(departmentId);
             }
         }
         int positionId = 0;
-        if (!values[4].matches(StringCommon.NUMBER_REGEX)) {
+        Position position = new Position();
+        if (!values[4].trim().matches(StringCommon.NUMBER_REGEX)) {
             errors.add("PositionId phải là số");
         } else {
-            positionId = Integer.parseInt(values[4]);
-            if (!positionRepository.isPositionExist(positionId)) {
-                errors.add("Position không tồn tại");
+            positionId = Integer.parseInt(values[4].trim());
+
+            if (positionId <= 0) {
+                errors.add("PositionId phải lớn hơn 0");
+            } else if (!context.getMapByPositionId().containsKey(positionId)) {
+                errors.add("PositionId không tồn tại");
+            } else {
+                position = context.getMapByPositionId().get(positionId);
             }
         }
         if (errors.isEmpty()) {
-            Department department = new Department(departmentId, null);
-            Position position = new Position(positionId, null);
             Account account = new Account();
             account.setEmail(email);
-            account.setUsername(username);
+            account.setUsername(userName);
             account.setFullName(fullName);
             account.setDepartment(department);
             account.setPosition(position);
             account.setCreateDate(LocalDate.now().toString());
-
-            accounts.add(account);
-
-            return null;
+            context.getSetEmail().add(email);
+            context.getSetUsername().add(userName);
+            entities.add(account);
+        } else {
+            String error = String.join(" - ", errors);
+            listErrors.add(line + "," + error);
         }
-        return line + "," + String.join(" | ", errors);
     }
 
+    @Override
+    public void saveAll(List<Account> entities) {
+        repository.themListAccount(entities);
+    }
 
+    @Override
+    public void exportErrors(String header, List<String> listErrors, String pathErrorFile) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(pathErrorFile));
+            bw.write(header + "error_message");
+            bw.newLine();
+            for (String error : listErrors) {
+                bw.write(error);
+                bw.newLine();
+            }
+            bw.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+

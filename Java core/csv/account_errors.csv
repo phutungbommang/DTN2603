@@ -1,6 +1,6 @@
-email,username,fullName,departmentId,positionId,error_message
-email1@gmail.com,username1,fullName1,1,1,Position không tồn tại
-email2@gmail.com,username2,fullName2,2,2,Email đã tồn tại | Username đã tồn tại
-email3@gmail.com,username3,fullName3,3,4,Email đã tồn tại | Username đã tồn tại
+email,username,fullName,departmentId,positionIderror_message
+email1@gmail.com,username1,fullName1,1,1,Email đã tồn tại - Username đã tồn tại
+email2@gmail.com,username2,fullName2,2,2,Email đã tồn tại - Username đã tồn tại
+email3@gmail.com,username3,fullName3,3,4,Email đã tồn tại - Username đã tồn tại
 ,,,,,Sai số lượng cột
 ,Sai số lượng cột

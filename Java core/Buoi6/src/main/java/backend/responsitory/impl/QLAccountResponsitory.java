@@ -187,4 +187,40 @@ public class QLAccountResponsitory implements IQLAccountResponsitory {
         }
         return false;
     }
-}
+
+    @Override
+    public void themListAccount(List<Account> accounts) {
+            String sql = "INSERT INTO account " +
+                    "(email, username, full_name, department_id, position_id, create_date) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
+
+            Connection con = null;
+
+            try {
+
+                con = JDBCUtils.getConnection();
+
+                PreparedStatement st = con.prepareStatement(sql);
+
+                for (Account account : accounts) {
+
+                    st.setString(1, account.getEmail());
+                    st.setString(2, account.getUsername());
+                    st.setString(3, account.getFullName());
+                    st.setInt(4, account.getDepartment().getDepartmentId());
+                    st.setInt(5, account.getPosition().getPositionId());
+                    st.setString(6, account.getCreateDate());
+
+                    st.addBatch();
+                }
+
+                st.executeBatch();
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } finally {
+                JDBCUtils.close(con);
+            }
+        }
+    }
+

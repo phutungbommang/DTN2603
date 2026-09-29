@@ -11,4 +11,5 @@ public interface IQLDepartmentResponsitory {
     boolean xoaDepartmentTheoId(Integer departmentId);
     boolean themDepartment(String departmentName);
     boolean isDepartmentExist(int id);
+    void themListDepartment(List<Department> departments);
 }

@@ -385,6 +385,16 @@ public class Function {
         // lưu ds các tài liệu đó vào DB
         System.out.println(message);
     }
+    private void importDepartmentCSV() {
+        // đưa file csv vào thông qua 1 đường dẫn: C:\Users\media\OneDrive\Máy tính\DTN2603\Java core\csv\input_department.csv
+        System.out.println("Nhập vào đường dẫn file csv muốn import: ");
+        String url = scanner.nextLine();
+        // đưa đường dẫn cho controller
+        String message = departmentController.importDepartmentCSV(url);
+        // đọc file -> ds các tài liệu trong file
+        // lưu ds các tài liệu đó vào DB
+        System.out.println(message);
+    }
     public void menu() {
         while (true) {
             System.out.println("ACCOUNT");
@@ -398,11 +408,12 @@ public class Function {
             System.out.println("7. Thêm Department");
             System.out.println("8. Xóa Department");
             System.out.println("9. Sửa Department");
+            System.out.println("10. import Department");
             System.out.println("\nPOSITION");
-            System.out.println("10. Hiển thị Position");
-            System.out.println("11. Thêm Position");
-            System.out.println("12. Xóa Position");
-            System.out.println("13. Sửa Position");
+            System.out.println("11. Hiển thị Position");
+            System.out.println("12. Thêm Position");
+            System.out.println("13. Xóa Position");
+            System.out.println("14. Sửa Position");
             System.out.println("\n0. Thoát");
             System.out.print("Mời chọn chức năng: ");
             String choice = scanner.nextLine();
@@ -434,17 +445,19 @@ public class Function {
                     suaDepartment();
                     break;
                 case "10":
-                    hienThiPosition();
+                    importDepartmentCSV();
                     break;
                 case "11":
-                    themPosition();
+                    hienThiPosition();
                     break;
                 case "12":
-                    xoaPosition();
+                    themPosition();
                     break;
                 case "13":
-                    suaPosition();
+                    xoaPosition();
                     break;
+                case "14":
+                    suaPosition();
                 case "0":
                     System.exit(0);
                 default:

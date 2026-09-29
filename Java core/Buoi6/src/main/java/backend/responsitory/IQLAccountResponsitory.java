@@ -13,4 +13,5 @@ public interface IQLAccountResponsitory {
     boolean isUsernameExist(String username);
     boolean isEmailExist(String email);
     boolean isAccountExist(int id);
+    void themListAccount(List<Account> accounts);
 }
